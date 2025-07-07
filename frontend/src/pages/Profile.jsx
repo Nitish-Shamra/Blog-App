@@ -50,7 +50,7 @@ function Profile() {
           <input  onChange={handleFileChange}  type="file"  name="avatar"  id="file-input"  hidden  />
           
         
-        <h3>Web Developer</h3>
+        {/* <h3>Web Developer</h3> */}
         <div className="user-social-icons">
           <Link to="#"><FaFacebook /></Link>
           <Link to="#"><FaInstagram /></Link>
@@ -61,10 +61,10 @@ function Profile() {
       <div className="profile-details-right">
         <h2>{user.name}</h2>
         <p><span>Email:</span> {user.email}</p>
-        <h3>About Me</h3>
-        <div className="user-about-section">
+        {/* <h3>About Me</h3> */}
+        {/* <div className="user-about-section">
           <textarea  name="aboutme"  id="aboutme"  rows={6}  placeholder="Write here..."  className="aboutme-textarea"  />
-        </div>
+        </div> */}
         <button type='submit' className='submit-btn'>Upload</button>
       </div>
       </div>

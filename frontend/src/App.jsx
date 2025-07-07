@@ -17,6 +17,7 @@ import AdminDashboard from "../AdminPanel/AdminDashboard/AdminDashboard";
 import UserComments from "./Components/UserComments/UserComments";
 import ShowDetailedBlogToAdmin from "../AdminPanel/ShowimgApprovedBlogs/ShowDetailedBlogToAdmin";
 import RequireAdmin from "../AdminPanel/RequireAdmin";
+import CommentsSection from "../AdminPanel/CommentsSectionFor Admin/CommentsSection";
 
 
 
@@ -41,6 +42,7 @@ function App() {
         <Route path='/detail-blog-for-admin/:id' element={<RequireAdmin><AuthLayout><DetailBlogsForAdmin/></AuthLayout></RequireAdmin>}/>
         <Route path='/showdetail-blog-for-admin/:id' element={<RequireAdmin><AuthLayout><ShowDetailedBlogToAdmin/></AuthLayout></RequireAdmin>}/>
         <Route path='/pendingblogs' element={<RequireAdmin><AdminMainLayout><PendingBlogs/></AdminMainLayout></RequireAdmin> }/>
+        <Route path='/comment-section/admin' element={<RequireAdmin><AdminMainLayout><CommentsSection/></AdminMainLayout></RequireAdmin> }/>
         <Route path='/admin-dashboard' element={<RequireAdmin><AdminMainLayout><AdminDashboard/></AdminMainLayout></RequireAdmin> }/>
         <Route path='/approved-blogs-by-admin' element={<RequireAdmin><AdminMainLayout><ShowingApprovedBlogs/></AdminMainLayout></RequireAdmin> }/>
       </Routes>

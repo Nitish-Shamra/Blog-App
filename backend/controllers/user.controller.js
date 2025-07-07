@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const getDataUri = require("../utils/dataUri.js");
 const Blog = require("../models/blog.model.js");
 const Comments = require("../models/comment.model.js");
+const generateGeminiResponse = require("../gemini.js");
 const cloudinary = require('cloudinary').v2;
 
 
@@ -403,7 +404,7 @@ const totalBlogs = async (req, res)=>{
     }
 }
 
-// api for user and the there blogs and cooments on them
+// api for user and the there blogs and comments on them
 const usersWithBlogsAndComments = async (req, res) => {
   try {
     const users = await User.find({}, 'name email avatar')
@@ -442,5 +443,34 @@ const commentsOnMyBlogs = async (req, res) => {
   }
 };
 
+// for remove comment....
+const deleteComment = async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    return res.status(400).json({ success: false, message: "comment id is required" });
+  }
+  try {
+    const deletedComment = await Comments.findByIdAndDelete( id );
+    if (!deletedComment) {
+      return res.status(404).json({ success: false, message: "not deleted" });
+    }
+    res.json({ success: true, message: "comment deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error deleting comment" });
+  }
+};
+
+// google gemni
+
+const generateContent = async (req,res) =>{
+  try {
+    const {prompt} = req.body;
+    const  content =await  generateGeminiResponse(prompt + 'generate a blog content for this topic in simple text format' ) 
+    res.json({success:true, content})
+  } catch (error) {
+    res.status(500).json({success:false, message: 'faled to generate the content'})
+  }
+}
+
 module.exports = { register, login, logOut, uploadThumbnail, addBlog, removeBlog, allBlogs,
-    uploadAvatar,userdata, myBlogs, pendingBlogs,approveBlog,rejectBlog, blogDetail, addComments, getBlog, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs};
+    uploadAvatar,userdata, myBlogs, pendingBlogs,approveBlog,rejectBlog, blogDetail, addComments, getBlog, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs ,deleteComment ,generateContent};
