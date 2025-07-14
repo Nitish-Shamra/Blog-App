@@ -18,6 +18,7 @@ import UserComments from "./Components/UserComments/UserComments";
 import ShowDetailedBlogToAdmin from "../AdminPanel/ShowimgApprovedBlogs/ShowDetailedBlogToAdmin";
 import RequireAdmin from "../AdminPanel/RequireAdmin";
 import CommentsSection from "../AdminPanel/CommentsSectionFor Admin/CommentsSection";
+import Activity from "../AdminPanel/Activity/Activity";
 
 
 
@@ -45,6 +46,7 @@ function App() {
         <Route path='/comment-section/admin' element={<RequireAdmin><AdminMainLayout><CommentsSection/></AdminMainLayout></RequireAdmin> }/>
         <Route path='/admin-dashboard' element={<RequireAdmin><AdminMainLayout><AdminDashboard/></AdminMainLayout></RequireAdmin> }/>
         <Route path='/approved-blogs-by-admin' element={<RequireAdmin><AdminMainLayout><ShowingApprovedBlogs/></AdminMainLayout></RequireAdmin> }/>
+        <Route path='//activity-section/admin' element={<RequireAdmin><AdminMainLayout><Activity/></AdminMainLayout></RequireAdmin> }/>
       </Routes>
      </BrowserRouter>
     </>

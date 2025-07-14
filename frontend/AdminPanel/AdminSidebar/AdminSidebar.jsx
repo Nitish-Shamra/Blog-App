@@ -19,6 +19,9 @@ function Sidebar() {
          <div className="admin-sidebar-links">
              <NavLink to='/comment-section/admin'>Comments</NavLink>
         </div>
+          <div className="admin-sidebar-links">
+             <NavLink to='/activity-section/admin'>Activities</NavLink>
+        </div>
       
     </div>
   )

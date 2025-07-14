@@ -1,5 +1,5 @@
 const express = require('express');
-const {register, login, logOut, uploadThumbnail, addBlog, removeBlog, allBlogs, uploadAvatar, userdata, myBlogs, pendingBlogs, approveBlog, rejectBlog, blogDetail, getBlog, addComments, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs, deleteComment, generateContent } = require('../controllers/user.controller.js');
+const {register, login, logOut, uploadThumbnail, addBlog, removeBlog, allBlogs, uploadAvatar, userdata, myBlogs, pendingBlogs, approveBlog, rejectBlog, blogDetail, getBlog, addComments, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs, deleteComment, generateContent, getActivityLogs } = require('../controllers/user.controller.js');
 const isAuthenticated = require('../middleware/isAuthenticated.js');
 const {upload, avatarUpload} = require('../middleware/multer.js');
 const isAdmin = require('../middleware/isAdmin.js');
@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.route('/register').post(register);
 router.route('/login').post(login);
-router.route('/logout').get(logOut);
+router.route('/logout').get(isAuthenticated, logOut);
 router.route('/upload/blogimage').post(upload.single('blogimage'), uploadThumbnail);
 router.route('/upload/avatar').post(avatarUpload.single('avatar'), uploadAvatar);
 router.route('/upload/blog').post( isAuthenticated,addBlog);
@@ -36,5 +36,10 @@ router.route('/admin/total/blog').get(isAuthenticated, isAdmin, totalBlogs);
 router.route('/admin/total/users').get(isAuthenticated, isAdmin, totalUser );
 router.route('/admin/users-with-blogs-comments' ).get(isAuthenticated, isAdmin, usersWithBlogsAndComments)
 router.route('/admin/delete/comment').post(deleteComment);
+
+
+router.route('/admin/activity/logs').get(isAuthenticated, isAdmin, getActivityLogs);
+
+
 
 module.exports = router;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./CreateBlogs.css";
 import upload_area from '../assets/upload_area.svg'
 import Quill from "quill";
-import {parse} from 'marked';
+import { marked } from 'marked';  
 
 const CreateBlogs = () => {
 
@@ -23,25 +23,27 @@ const CreateBlogs = () => {
         setImage(e.target.files[0])
      }
 
-  const handleContent = async ()=> {
-    if(!createBlog.title.trim()) return ;
-    try {
-      setLoading(true);
-      const res = await fetch('http://localhost:5000/api/v1/user/generate/content',{
-        method: 'POST',
-        headers: {
-         'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: title })
-      })
-      const data = await res.json();
-      if(data.success){
-        quillRef.current.root.innerHTML = parse(data.content)
-      }
-    } catch (error) {
-      console.log(error)
+ const handleContent = async ()=> {
+  if(!createBlog.title.trim()) return ;
+  try {
+    setLoading(true);
+    const res = await fetch('http://localhost:5000/api/v1/user/generate/content',{
+      method: 'POST',
+      headers: {
+       'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt: createBlog.title })
+    })
+    const data = await res.json();
+    if(data.success){
+      quillRef.current.root.innerHTML = marked(data.content)
     }
+  } catch (error) {
+    console.log(error)
+  } finally {
+    setLoading(false);
   }
+}
  
 
   const handleSubmit = async (e) => {
@@ -125,7 +127,8 @@ const CreateBlogs = () => {
           Content:
          
             <div className="blog-content-area" ref={editorRef}></div>
-            <button className="generate-with-ai-btn" type="button" onClick={handleContent}>Generate with AI</button>
+            {/* {loading && (<div>loading...</div>)}
+            <button className="generate-with-ai-btn" type="button" onClick={handleContent}>Generate with AI</button> */}
         </div>
  
 

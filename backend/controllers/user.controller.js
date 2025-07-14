@@ -7,7 +7,8 @@ const Blog = require("../models/blog.model.js");
 const Comments = require("../models/comment.model.js");
 const generateGeminiResponse = require("../gemini.js");
 const cloudinary = require('cloudinary').v2;
-
+const ActivityLog = require("../models/activitylog.model.js");
+const logActivity = require('../utils/logActivity.js')
 
 
 
@@ -90,6 +91,16 @@ const login = async (req, res) =>{
             })
         }
         const token =  jwt.sign({ id:user._id, role: user.role}, process.env.SECRET_KEY, {expiresIn:"1d"}) /// token genrate
+
+         // Log activity
+        await logActivity({
+            action: 'User Login',
+            user: user._id,
+            targetType: 'User',
+            target: user._id,
+            details: `User ${user.name} logged in.`
+        });
+
         return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httpsOnly:true, sameSite:"strict" }).json({
             success:true,
             token,
@@ -107,8 +118,19 @@ const login = async (req, res) =>{
     }
 }
 // for logout
-const logOut = async(_, res) =>{
+const logOut = async (req, res) =>{
      try {
+        // Log activity (if user is authenticated)
+        if (req.user) {
+           console.log('logging out', req.user);
+            await logActivity({
+                action: 'User Logout',
+                user: req.user._id,
+                targetType: 'User',
+                target: req.user._id,
+                details: `User logged out.`
+            });
+        }
         return  res.status(200).cookie("token", "", {maxAge: 0}).json({
             message: 'Logout successfully',
             success: 'true'
@@ -244,6 +266,13 @@ const approveBlog = async (req, res)=>{
             success: true,
             message: 'Blog approved', blog
         });
+        await logActivity({
+         action: 'Blog Approved',
+         user: req.user.id,
+         targetType: 'Blog',
+         target: blog._id,
+         details: `Blog titled "${blog.title}" was approved.`
+});
     } catch (error) {
         res.status(500).json({ success: false, message: "Failed to approve blog" }); 
     }
@@ -462,15 +491,31 @@ const deleteComment = async (req, res) => {
 
 // google gemni
 
-const generateContent = async (req,res) =>{
+const generateContent = async (req, res) => {
   try {
-    const {prompt} = req.body;
-    const  content =await  generateGeminiResponse(prompt + 'generate a blog content for this topic in simple text format' ) 
-    res.json({success:true, content})
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ success: false, message: "Prompt is required" });
+    const content = await generateGeminiResponse(prompt);
+    res.json({ success: true, content });
   } catch (error) {
-    res.status(500).json({success:false, message: 'faled to generate the content'})
+    res.status(500).json({ success: false, message: "Failed to generate content" });
+  }
+};
+
+// activity
+const getActivityLogs = async (req, res) =>{
+   try {
+    const logs = await ActivityLog.find()
+      .populate('user', 'name email')
+      .populate('target')
+      .sort({ createdAt: -1 })
+      .limit(100);
+    res.json({ success: true, logs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Failed to fetch activity logs' });
   }
 }
 
+
 module.exports = { register, login, logOut, uploadThumbnail, addBlog, removeBlog, allBlogs,
-    uploadAvatar,userdata, myBlogs, pendingBlogs,approveBlog,rejectBlog, blogDetail, addComments, getBlog, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs ,deleteComment ,generateContent};
+    uploadAvatar,userdata, myBlogs, pendingBlogs,approveBlog,rejectBlog, blogDetail, addComments, getBlog, totalUser, totalBlogs, usersWithBlogsAndComments, commentsOnMyBlogs ,deleteComment ,generateContent, getActivityLogs};

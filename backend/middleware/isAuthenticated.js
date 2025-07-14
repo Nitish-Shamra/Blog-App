@@ -14,7 +14,7 @@ const isAuthenticated = async (req, res, next) => {
         success: false,
       });
     }
-
+    console.log('Auth header:', req.header('Authorization'));
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
      const user = await User.findById(decoded.id);
     if (!user) {

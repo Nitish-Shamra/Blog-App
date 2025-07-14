@@ -7,6 +7,8 @@ export const useUser = () => useContext(UserContext);
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null); // or initial user from localStorage/api
 
+  const [logs , setLogs] = useState([]);
+
   const fetchUser = async () =>{
     const token = localStorage.getItem("token");
     if(!token) return;
@@ -35,7 +37,7 @@ export function UserProvider({ children }) {
   }, [])
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, logs, setLogs }}>
       {children}
     </UserContext.Provider>
   );

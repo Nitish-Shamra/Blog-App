@@ -11,7 +11,7 @@ import { useUser } from '../../pages/UserContext';
 
 function Navbar() {
     
-    const { user } = useUser();
+    const { user, logs, setLogs } = useUser();
      
   return (
     <div className='navbar'>
@@ -35,7 +35,28 @@ function Navbar() {
        <div className="navbar-buttons">
          {localStorage.getItem('token') ?
            <div className="navbar-signin">
-           <Link onClick={ ()=> {localStorage.removeItem('token'); window.location.replace('/login')}}><TbLogout2 /> Logout </Link>
+           <Link  onClick={async () => {
+    try {
+      await fetch('http://localhost:5000/api/v1/user/logout', {
+        method: 'GET',
+        credentials: 'include', // if you use httpOnly cookies
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+       const res = await fetch('http://localhost:5000/api/v1/user/admin/activity/logs', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+    const data = await res.json();
+    setLogs(data.logs || [])
+    } catch (e) {
+      console.log(e)
+    }
+    localStorage.removeItem('token');
+    window.location.replace('/login');
+  }}><TbLogout2 /> Logout </Link>
            </div> : 
             <div className="navbar-signin">
            <Link to="/login"><IoLogInOutline /> Login </Link>
